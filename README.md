@@ -84,9 +84,8 @@ For Software:
 [Add any extra demo materials/links]
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
+- Allen Jude: Project Initialization & Repository Management, UI/UX & Animations, Core Detection Logic, Visual Effects, Code Optimization
+- Elna Susan: Core Services, UI Development, Documentation
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
