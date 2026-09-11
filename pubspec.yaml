@@ -35,6 +35,7 @@ dependencies:
   camera: ^0.10.5
   google_mlkit_face_detection: ^0.13.0
   record: ^7.0.0
+  video_player: ^2.8.6
 
 dev_dependencies:
   flutter_test:
@@ -60,8 +61,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-      - assets/sneeze.json
-  #   - images/a_dot_ham.jpeg
+    - assets/sneeze.json
+    - assets/sivani.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
