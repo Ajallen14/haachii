@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import 'camera_screen.dart';
+import 'ui/camera_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
