@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import 'camera_screen.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -8,11 +10,12 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   bool _showText = false;
   late final AnimationController _lottieController;
   late final AnimationController _textController;
-  
+
   final String _title = 'Haachii';
 
   @override
@@ -32,7 +35,16 @@ class _HomeScreenState extends State<SplashScreen> with TickerProviderStateMixin
         setState(() {
           _showText = true;
         });
-        _textController.forward();
+
+        _textController.forward().then((_) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const CameraScreen()),
+              );
+            }
+          });
+        });
       }
     });
   }
@@ -52,11 +64,11 @@ class _HomeScreenState extends State<SplashScreen> with TickerProviderStateMixin
         children: [
           // Sneeze Animation Layer
           Align(
-            alignment: const Alignment(-0.4, 0.0), 
+            alignment: const Alignment(-0.4, 0.0),
             child: Lottie.asset(
               'assets/sneeze.json',
               controller: _lottieController,
-              width: 250, 
+              width: 250,
               onLoaded: (composition) {
                 _lottieController.duration = composition.duration;
                 Future.delayed(const Duration(seconds: 2), () {
@@ -65,38 +77,45 @@ class _HomeScreenState extends State<SplashScreen> with TickerProviderStateMixin
               },
             ),
           ),
-          
+
           // Letter-by-Letter Circular Orbit Layer
           if (_showText)
             Align(
-              alignment: const Alignment(-0.2, -0.5), 
+              alignment: const Alignment(-0.2, -0.5),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(_title.length, (index) {
-                  final double start = index * 0.08; 
+                  final double start = index * 0.08;
                   final double end = (start + 0.45).clamp(0.0, 1.0);
-                  final Animation<Offset> pathAnimation = CubicBezierOffsetTween(
-                    begin: const Offset(-20, 250),
-                    control1: const Offset(300, 350), 
-                    control2: const Offset(350, -50), 
-                    end: Offset.zero,                 
-                  ).animate(
-                    CurvedAnimation(
-                      parent: _textController,
-                      curve: Interval(start, end, curve: Curves.easeInOutSine), 
-                    ),
-                  );
+                  final Animation<Offset> pathAnimation =
+                      CubicBezierOffsetTween(
+                        begin: const Offset(-20, 250),
+                        control1: const Offset(300, 350),
+                        control2: const Offset(350, -50),
+                        end: Offset.zero,
+                      ).animate(
+                        CurvedAnimation(
+                          parent: _textController,
+                          curve: Interval(
+                            start,
+                            end,
+                            curve: Curves.easeInOutSine,
+                          ),
+                        ),
+                      );
 
                   // The fade for each individual letter
-                  final Animation<double> fadeAnimation = Tween<double>(
-                    begin: 0.0, 
-                    end: 1.0
-                  ).animate(
-                    CurvedAnimation(
-                      parent: _textController,
-                      curve: Interval(start, (start + 0.2).clamp(0.0, 1.0), curve: Curves.easeIn),
-                    )
-                  );
+                  final Animation<double> fadeAnimation =
+                      Tween<double>(begin: 0.0, end: 1.0).animate(
+                        CurvedAnimation(
+                          parent: _textController,
+                          curve: Interval(
+                            start,
+                            (start + 0.2).clamp(0.0, 1.0),
+                            curve: Curves.easeIn,
+                          ),
+                        ),
+                      );
 
                   return AnimatedBuilder(
                     animation: _textController,
@@ -144,15 +163,15 @@ class CubicBezierOffsetTween extends Tween<Offset> {
     final double t1 = 1 - t;
     // Cubic Bézier formula applied to X/Y coordinates
     return Offset(
-      t1 * t1 * t1 * begin!.dx + 
-      3 * t1 * t1 * t * control1.dx + 
-      3 * t1 * t * t * control2.dx + 
-      t * t * t * end!.dx,
-      
-      t1 * t1 * t1 * begin!.dy + 
-      3 * t1 * t1 * t * control1.dy + 
-      3 * t1 * t * t * control2.dy + 
-      t * t * t * end!.dy,
+      t1 * t1 * t1 * begin!.dx +
+          3 * t1 * t1 * t * control1.dx +
+          3 * t1 * t * t * control2.dx +
+          t * t * t * end!.dx,
+
+      t1 * t1 * t1 * begin!.dy +
+          3 * t1 * t1 * t * control1.dy +
+          3 * t1 * t * t * control2.dy +
+          t * t * t * end!.dy,
     );
   }
 }

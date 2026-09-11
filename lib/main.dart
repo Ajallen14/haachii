@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart'; 
+import 'package:haachii/splash_screen.dart';
 
-import 'splash_screen.dart';
+List<CameraDescription> cameras = [];
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    cameras = await availableCameras();
+  } catch (e) {
+    debugPrint('Error fetching cameras: $e');
+  }
+
   runApp(const HaachiiApp());
 }
 
@@ -13,7 +23,9 @@ class HaachiiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Haachii',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
