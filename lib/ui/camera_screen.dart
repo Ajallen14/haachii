@@ -37,7 +37,6 @@ class _CameraScreenState extends State<CameraScreen> {
     super.initState();
     _initCamera();
 
-    // Audio now just logs the spike to boost visual confidence
     _audioService.startTripwire(
       onLoudNoise: () {
         _sneezeDetector.registerAudioSpike();
@@ -99,7 +98,6 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  // Moved the freeze and overlay logic into its own clean method
   void _triggerContainmentBreach(SneezeReport report) {
     debugPrint("CONTAINMENT BREACH: SNEEZE CONFIRMED BY VISION!");
 
