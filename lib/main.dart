@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home.dart';
+import 'splash_screen.dart';
 
 void main() {
   runApp(const HaachiiApp());
@@ -14,7 +14,7 @@ class HaachiiApp extends StatelessWidget {
     return MaterialApp(
       title: 'Haachii',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
