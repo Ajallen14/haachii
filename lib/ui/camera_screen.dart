@@ -1,13 +1,16 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+
 import '../main.dart';
 import '../services/face_detection_service.dart';
 import '../services/audio_service.dart';
 import '../services/sneeze_detector.dart';
 import '../utils/camera_utils.dart';
 import 'particle_system.dart';
+import 'wiper_video_overlay.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -27,6 +30,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   SneezeReport? _finalReport;
   bool _isFrozen = false;
+  bool _showWiperVideo = false;
 
   @override
   void initState() {
@@ -85,20 +89,34 @@ class _CameraScreenState extends State<CameraScreen> {
 
     if (report != null) {
       debugPrint("CONTAINMENT BREACH: SNEEZE CONFIRMED!");
-      
+
       setState(() {
         _finalReport = report;
         _isFrozen = true;
       });
-      
-      // Freeze the camera feed
+
       _controller?.pausePreview();
-      
-      // Clear the buffer so we don't double-trigger
       _sneezeDetector.clearBuffer();
+
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted && _isFrozen) {
+          setState(() {
+            _showWiperVideo = true;
+          });
+        }
+      });
     } else {
       debugPrint("False alarm. Probably just a cough.");
     }
+  }
+
+  void _resetDetection() {
+    setState(() {
+      _isFrozen = false;
+      _finalReport = null;
+      _showWiperVideo = false;
+    });
+    _controller?.resumePreview();
   }
 
   @override
@@ -123,14 +141,26 @@ class _CameraScreenState extends State<CameraScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // Live / Frozen Camera Feed (Bottom)
           CameraPreview(_controller!),
 
-          // Trigger the overlays when a sneeze is confirmed
           if (_isFrozen && _finalReport != null) ...[
-            // The Dynamic Particle Overlay
+            //  Wiper Video
+            if (_showWiperVideo)
+              WiperVideoOverlay(
+                onComplete: () {
+                  if (mounted) {
+                    setState(() {
+                      _showWiperVideo = false;
+                    });
+                  }
+                },
+              ),
+
+            // Dripping Particle Effect
             SneezeParticleSystem(report: _finalReport!),
-            
-            // The Verdict Card
+
+            // Verdict Card
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -146,7 +176,11 @@ class _CameraScreenState extends State<CameraScreen> {
                   children: [
                     Text(
                       'CONTAINMENT BREACH',
-                      style: TextStyle(color: Colors.red, fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 10),
                     Text(
@@ -160,31 +194,29 @@ class _CameraScreenState extends State<CameraScreen> {
                     SizedBox(height: 15),
                     Text(
                       'Recommended Action: Isopropyl Alcohol Deployment',
-                      style: TextStyle(color: Colors.orange, fontSize: 14, fontStyle: FontStyle.italic),
+                      style: TextStyle(
+                        color: Colors.orange,
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-            
-            // Reset Button to resume the live demo
+
+            // Reset Button
             Positioned(
               top: 50,
               right: 20,
               child: IconButton(
                 icon: const Icon(Icons.refresh, color: Colors.white, size: 30),
-                onPressed: () {
-                  setState(() {
-                    _isFrozen = false;
-                    _finalReport = null;
-                  });
-                  _controller?.resumePreview();
-                },
+                onPressed: _resetDetection,
               ),
             ),
           ],
 
-          // Standard Back Button
+          // Back Button
           Positioned(
             top: 50,
             left: 20,
