@@ -11,6 +11,7 @@ import '../services/sneeze_detector.dart';
 import '../utils/camera_utils.dart';
 import 'particle_system.dart';
 import 'wiper_video_overlay.dart';
+import 'containment_report.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -31,6 +32,7 @@ class _CameraScreenState extends State<CameraScreen> {
   SneezeReport? _finalReport;
   bool _isFrozen = false;
   bool _showWiperVideo = false;
+  bool _showFullScreenReport = false;
 
   @override
   void initState() {
@@ -104,6 +106,7 @@ class _CameraScreenState extends State<CameraScreen> {
     setState(() {
       _finalReport = report;
       _isFrozen = true;
+      _showFullScreenReport = false;
     });
 
     _controller?.pausePreview();
@@ -123,6 +126,7 @@ class _CameraScreenState extends State<CameraScreen> {
       _isFrozen = false;
       _finalReport = null;
       _showWiperVideo = false;
+      _showFullScreenReport = false;
     });
 
     _sneezeDetector.clearBuffer();
@@ -158,75 +162,30 @@ class _CameraScreenState extends State<CameraScreen> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
+                  // Particles drawn under the video
+                  SneezeParticleSystem(report: _finalReport!),
+
                   if (_showWiperVideo)
                     WiperVideoOverlay(
                       onComplete: () {
                         if (mounted) {
                           setState(() {
                             _showWiperVideo = false;
+                            // Trigger the report once the video finishes
+                            _showFullScreenReport = true;
                           });
                         }
                       },
                     ),
-                  SneezeParticleSystem(report: _finalReport!),
                 ],
               ),
             ),
 
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                margin: const EdgeInsets.all(20),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.redAccent, width: 2),
-                ),
-                child: const Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'CONTAINMENT BREACH',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Blast Radius: 27 ft (8 meters)',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Text(
-                      'Estimated Velocity: 100 mph',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    SizedBox(height: 15),
-                    Text(
-                      'Recommended Action: Isopropyl Alcohol Deployment',
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            Positioned(
-              top: 50,
-              right: 20,
-              child: IconButton(
-                icon: const Icon(Icons.refresh, color: Colors.white, size: 30),
-                onPressed: _resetDetection,
-              ),
-            ),
+            if (_showFullScreenReport)
+              ContainmentReport(onReset: _resetDetection),
           ],
 
+          // Back Button
           Positioned(
             top: 50,
             left: 20,

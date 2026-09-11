@@ -37,7 +37,7 @@ class _HomeScreenState extends State<SplashScreen>
         });
 
         _textController.forward().then((_) {
-          Future.delayed(const Duration(milliseconds: 500), () {
+          Future.delayed(const Duration(milliseconds: 5000), () {
             if (mounted) {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const CameraScreen()),
