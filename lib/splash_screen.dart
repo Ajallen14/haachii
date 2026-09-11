@@ -25,7 +25,7 @@ class _HomeScreenState extends State<SplashScreen>
     _lottieController = AnimationController(vsync: this);
     _textController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1200),
     );
 
     _lottieController.addListener(() {

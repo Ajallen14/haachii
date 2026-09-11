@@ -36,6 +36,7 @@ dependencies:
   google_mlkit_face_detection: ^0.13.0
   record: ^7.0.0
   video_player: ^2.8.6
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:
