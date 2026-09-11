@@ -60,14 +60,13 @@ flutter run
 For Software:
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+<img width="448" height="999" alt="image" src="https://github.com/user-attachments/assets/40ab3ef5-bb33-4240-9df0-00ad2c0100fd" />
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+<img width="448" height="959" alt="image" src="https://github.com/user-attachments/assets/6fb24be6-9c0f-442a-bd7a-aa7cdd5f0d4c" />
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+<img width="448" height="959" alt="image" src="https://github.com/user-attachments/assets/21b57797-7456-4d6d-beae-b4288a50be3b" />
+
+
 
 # Diagrams
 ## Workflow
@@ -77,8 +76,10 @@ For Software:
 
 ### Project Demo
 # Video
-[Add your demo video link here]
-*Explain what the video demonstrates*
+
+https://github.com/user-attachments/assets/721f08fb-850b-428f-92e4-3a5e3dbf2c1d
+
+
 
 # Additional Demos
 **Released as an APK in this repository**
