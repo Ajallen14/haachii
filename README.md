@@ -2,7 +2,7 @@
 
 
 
-# [Project Name] 🎯
+# HAACHII 🎯
 
 
 ## Basic Details
@@ -10,18 +10,18 @@
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead: Allen Jude - Albertian Institute of Science and Technology
+- Member 2: Elna Susan - Albertian Institute of Science and Technology
+
 
 ### Project Description
-[2-3 lines about what your project does]
+Sneeze Trajectory Analyzer is a real-time computer vision system that detects sneezes via facial landmark tracking and computes their ballistic properties — blast radius, expulsion velocity, and danger zone — using actual projectile motion physics. It then tells you, with complete scientific confidence, exactly who got hit.
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+Every day, thousands of innocent bystanders are struck by unregistered, unregulated sneeze droplets traveling at unknown velocities — and NOBODY is tracking this. There is no early-warning system. No blast radius map. No accountability. Meanwhile, world governments spend billions on missile defense systems but *zero* dollars on sneeze defense systems. We're not saying a sneeze is a weapon. We're saying nobody has proven it *isn't*. This ends today.
 
 ### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+We pointed a webcam at people's faces and taught it to recognize the universal warning signs of an incoming sneeze — the head snap, the mouth flare, the point of no return — using MediaPipe Face Mesh for real-time facial tracking. The moment a sneeze is detected, our system runs honest-to-god projectile motion physics on the head's velocity and angle to calculate a live "blast cone" overlay, complete with distance, direction, and a danger zone. Anyone else in frame gets auto-scanned for impact and publicly flagged as a casualty. It's peer-reviewed science applied to a problem no one was asking anyone to solve — but now that we've solved it, you're welcome.
 
 ## Technical Details
 ### Technologies/Components Used
