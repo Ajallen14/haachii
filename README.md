@@ -2,11 +2,11 @@
 
 
 
-# HAACHII 🎯
+# HAACHII
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: Gold Diggers
 
 
 ### Team Members
@@ -70,8 +70,10 @@ For Software:
 *Add caption explaining what this shows*
 
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+## Workflow
+<img width="2752" height="1536" alt="workflow_diagram" src="https://github.com/user-attachments/assets/1f44480c-33c0-4d09-8ce4-85d64e76a524" />
+
+*Real-time camera frames and microphone audio are continuously analyzed to confirm a sneeze. Upon detection, the algorithm triggers a sequence of cinematic UI effects—freezing the live preview, spattering dynamic droplets, playing a wiper video transition, and displaying a full-screen biometric threat report before resetting the loop."*
 
 ### Project Demo
 # Video
