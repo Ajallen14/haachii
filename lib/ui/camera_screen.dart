@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
-import 'dart:io';
 import '../main.dart';
 import '../services/face_detection_service.dart';
+import '../services/audio_service.dart';
+import '../services/sneeze_detector.dart';
 import '../utils/camera_utils.dart';
 
 class CameraScreen extends StatefulWidget {
@@ -16,19 +18,20 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   CameraController? _controller;
   bool _isCameraInitialized = false;
-
-  // Initialize the ML Kit face detection service
-  final FaceDetectionService _faceService = FaceDetectionService();
   bool _isProcessing = false;
+
+  final FaceDetectionService _faceService = FaceDetectionService();
+  final AudioService _audioService = AudioService();
+  final SneezeDetector _sneezeDetector = SneezeDetector();
 
   @override
   void initState() {
     super.initState();
     _initCamera();
+    _audioService.startTripwire(onLoudNoise: _handleAudioSpike);
   }
 
   Future<void> _initCamera() async {
-    // Find the back camera
     final backCamera = cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.back,
       orElse: () => cameras.first,
@@ -37,18 +40,17 @@ class _CameraScreenState extends State<CameraScreen> {
     _controller = CameraController(
       backCamera,
       ResolutionPreset.high,
-      enableAudio: true,
-      imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
+      enableAudio: false,
+      imageFormatGroup: Platform.isAndroid
+          ? ImageFormatGroup.nv21
+          : ImageFormatGroup.bgra8888,
     );
 
     try {
       await _controller!.initialize();
 
-      // Hooking up the real-time frame stream
       _controller!.startImageStream((CameraImage image) async {
-        if (_isProcessing) {
-          return;
-        }
+        if (_isProcessing) return;
         _isProcessing = true;
 
         final inputImage = CameraUtils.convertCameraImageToInputImage(
@@ -59,31 +61,37 @@ class _CameraScreenState extends State<CameraScreen> {
         if (inputImage != null) {
           final List<Face> faces = await _faceService.processImage(inputImage);
 
-          // Testing Phase 1: Print to console if we found a face
           if (faces.isNotEmpty) {
-            final face = faces.first;
-            debugPrint(
-              'Tracking Face ID: ${face.trackingId} | Left Eye Open: ${face.leftEyeOpenProbability}',
-            );
+            _sneezeDetector.addFrame(faces.first);
           }
         }
-
         _isProcessing = false;
       });
 
-      if (mounted) {
-        setState(() {
-          _isCameraInitialized = true;
-        });
-      }
+      if (mounted) setState(() => _isCameraInitialized = true);
     } catch (e) {
-      debugPrint('Camera initialization error: $e');
+      debugPrint('Camera error: $e');
+    }
+  }
+
+  void _handleAudioSpike() {
+    bool isSneezeConfirmed = _sneezeDetector.evaluateSneeze();
+
+    if (isSneezeConfirmed) {
+      debugPrint("CONTAINMENT BREACH: SNEEZE CONFIRMED!");
+      // Later todo: Freeze the camera feed and draw the Ballistic Report Overlay!
+
+      // Clear the buffer so we don't double-trigger
+      _sneezeDetector.clearBuffer();
+    } else {
+      debugPrint("False alarm. Probably just a cough.");
     }
   }
 
   @override
   void dispose() {
     _faceService.dispose();
+    _audioService.dispose();
     _controller?.dispose();
     super.dispose();
   }
@@ -104,9 +112,6 @@ class _CameraScreenState extends State<CameraScreen> {
         children: [
           CameraPreview(_controller!),
 
-          // Later for CustomPainter danger zone overlay
-
-          // Temporary back button for testing
           Positioned(
             top: 50,
             left: 20,
