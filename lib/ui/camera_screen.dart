@@ -36,7 +36,16 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
     _initCamera();
-    _audioService.startTripwire(onLoudNoise: _handleAudioSpike);
+
+    // Audio now just logs the spike to boost visual confidence
+    _audioService.startTripwire(
+      onLoudNoise: () {
+        _sneezeDetector.registerAudioSpike();
+        debugPrint(
+          "Audio spike registered. Visual thresholds lowered temporarily.",
+        );
+      },
+    );
   }
 
   Future<void> _initCamera() async {
@@ -58,7 +67,7 @@ class _CameraScreenState extends State<CameraScreen> {
       await _controller!.initialize();
 
       _controller!.startImageStream((CameraImage image) async {
-        if (_isProcessing) return;
+        if (_isProcessing || _isFrozen) return;
         _isProcessing = true;
 
         final inputImage = CameraUtils.convertCameraImageToInputImage(
@@ -71,6 +80,14 @@ class _CameraScreenState extends State<CameraScreen> {
 
           if (faces.isNotEmpty) {
             _sneezeDetector.addFrame(faces.first);
+
+            // CONTINUOUS EVALUATION: Check for a sneeze on every single frame
+            final report = _sneezeDetector.evaluateSneeze();
+            if (report != null) {
+              _triggerContainmentBreach(report);
+            }
+          } else {
+            _sneezeDetector.clearBuffer();
           }
         }
         _isProcessing = false;
@@ -82,32 +99,25 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  void _handleAudioSpike() {
-    if (_isFrozen) return;
+  // Moved the freeze and overlay logic into its own clean method
+  void _triggerContainmentBreach(SneezeReport report) {
+    debugPrint("CONTAINMENT BREACH: SNEEZE CONFIRMED BY VISION!");
 
-    final report = _sneezeDetector.evaluateSneeze();
+    setState(() {
+      _finalReport = report;
+      _isFrozen = true;
+    });
 
-    if (report != null) {
-      debugPrint("CONTAINMENT BREACH: SNEEZE CONFIRMED!");
+    _controller?.pausePreview();
+    _sneezeDetector.clearBuffer();
 
-      setState(() {
-        _finalReport = report;
-        _isFrozen = true;
-      });
-
-      _controller?.pausePreview();
-      _sneezeDetector.clearBuffer();
-
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (mounted && _isFrozen) {
-          setState(() {
-            _showWiperVideo = true;
-          });
-        }
-      });
-    } else {
-      debugPrint("False alarm. Probably just a cough.");
-    }
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted && _isFrozen) {
+        setState(() {
+          _showWiperVideo = true;
+        });
+      }
+    });
   }
 
   void _resetDetection() {
@@ -116,6 +126,8 @@ class _CameraScreenState extends State<CameraScreen> {
       _finalReport = null;
       _showWiperVideo = false;
     });
+
+    _sneezeDetector.clearBuffer();
     _controller?.resumePreview();
   }
 
@@ -141,26 +153,28 @@ class _CameraScreenState extends State<CameraScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Live / Frozen Camera Feed (Bottom)
           CameraPreview(_controller!),
 
           if (_isFrozen && _finalReport != null) ...[
-            //  Wiper Video
-            if (_showWiperVideo)
-              WiperVideoOverlay(
-                onComplete: () {
-                  if (mounted) {
-                    setState(() {
-                      _showWiperVideo = false;
-                    });
-                  }
-                },
+            IgnorePointer(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (_showWiperVideo)
+                    WiperVideoOverlay(
+                      onComplete: () {
+                        if (mounted) {
+                          setState(() {
+                            _showWiperVideo = false;
+                          });
+                        }
+                      },
+                    ),
+                  SneezeParticleSystem(report: _finalReport!),
+                ],
               ),
+            ),
 
-            // Dripping Particle Effect
-            SneezeParticleSystem(report: _finalReport!),
-
-            // Verdict Card
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -205,7 +219,6 @@ class _CameraScreenState extends State<CameraScreen> {
               ),
             ),
 
-            // Reset Button
             Positioned(
               top: 50,
               right: 20,
@@ -216,7 +229,6 @@ class _CameraScreenState extends State<CameraScreen> {
             ),
           ],
 
-          // Back Button
           Positioned(
             top: 50,
             left: 20,
