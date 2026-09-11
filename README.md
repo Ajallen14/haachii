@@ -81,7 +81,7 @@ For Software:
 *Explain what the video demonstrates*
 
 # Additional Demos
-[Add any extra demo materials/links]
+**Released as an APK in this repository**
 
 ## Team Contributions
 - Allen Jude: Project Initialization & Repository Management, UI/UX & Animations, Core Detection Logic, Visual Effects, Code Optimization
