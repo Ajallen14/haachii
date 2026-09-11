@@ -26,23 +26,35 @@ We pointed a webcam at people's faces and taught it to recognize the universal w
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
-- [Frameworks used]
-- [Libraries used]
-- [Tools used]
-
-For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
+- Languages used: Dart
+- Frameworks used: Flutter
+- Libraries used:
+    * camera: For high-resolution live feed interception.
+    * google_mlkit_face_detection: For real-time 3D head pitch (Euler X) and bounding box tracking.
+    * record: For the low-latency audio decibel tripwire.
+    * video_player: For the cinematic screen-wiping transition overlay.
+    * animated_text_kit & lottie: For the splash screen and biometric terminal UI effects.
+- Tools used : Google ML Kit Vision API, standard Flutter toolchain (Android SDK / iOS SDK).
 
 ### Implementation
 For Software:
 # Installation
-[commands]
+```
+# Clone the repository
+git clone https://github.com/Ajallen14/haachii.git
+cd haachii
+
+# Clean the workspace (crucial for resolving cross-platform audio/camera dependency caching)
+flutter clean
+
+# Fetch all packages
+flutter pub get
+```
 
 # Run
-[commands]
+```
+flutter run
+```
 
 ### Project Documentation
 For Software:
@@ -60,25 +72,6 @@ For Software:
 # Diagrams
 ![Workflow](Add your workflow/architecture diagram here)
 *Add caption explaining your workflow*
-
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
 
 ### Project Demo
 # Video
